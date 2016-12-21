@@ -1,0 +1,57 @@
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url "http://repo.spring.io/snapshot" }
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web:1.4.2.RELEASE"){
+    	exclude module: "spring-boot-starter-tomcat"
+    }
+    compile("org.springframework.boot:spring-boot-starter-jetty:1.4.1.BUILD-SNAPSHOT")
+    compile("org.springframework:spring-webmvc:4.1.6.RELEASE")
+    compile 'org.eclipse.jetty:apache-jsp:9.3.7.RC1'
+    compile 'org.eclipse.jetty:apache-jstl:9.3.7.RC1'
+    compile group: 'com.restfb', name: 'restfb', version: '1.35.0'
+}
+
+
+task copySrc(type: Copy){
+    from "src"
+	exclude "main/java"
+	exclude "test"
+    into "$buildDir/libs/src"
+}
+
+task copyCmd(type: Copy) {
+    from "run.bat"
+    into "$buildDir/libs"
+}
+
+task copyConfig(type: Copy) {
+    from "configs"
+    into "$buildDir/libs/configs"
+}
+
+task copyLibs(type: Copy){
+	from configurations.runtime
+    into "$buildDir/libs/lib"
+}
+
+//build đầy đủ
+task fatBuild(type: Copy, dependsOn: ["jar", "copySrc", "copyConfig", "copyCmd", "copyLibs"]) {
+	description 'Build jar, copy web source, config and run bath file'
+}
+
+//build bản nhẹ chỉ có src
+task("litBuild", type: Copy, dependsOn: "copySrc") {
+	description 'Copy web source'
+    from configurations.runtime
+    into "$buildDir/libs/lib"
+}
+
+
