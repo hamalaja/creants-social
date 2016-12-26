@@ -112,13 +112,13 @@ public class UserController {
 			outputString += line;
 		}
 		reader.close();
-		System.out.println(outputString);
 
 		JsonObject jo = new JsonObject(outputString);
 		url = new URL("https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + jo.getString("access_token"));
 		urlConn = url.openConnection();
 		outputString = "";
 		reader = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
+		line = "";
 		while ((line = reader.readLine()) != null) {
 			outputString += line;
 		}
